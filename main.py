@@ -17,7 +17,8 @@ app = FastAPI(
 
 if os.getenv("ENVIRONMENT") == "production":
     allowed_origins = [
-        "https://devtools.devlabz.in/",
+        "https://devtools.devlabz.in",
+        "https://www.devtools.devlabz.in"
     ]
 else:
     allowed_origins = ["*"]
@@ -26,7 +27,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -34,8 +35,20 @@ app.include_router(parse.router)
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "pdf-parser"}
+    return {"status": "healthy", "service": "pdf-parser", "port": os.getenv("PORT", "not set")}
 
 @app.get("/")
 async def root():
     return {"message": "PDF Parser API is running", "docs": "/docs"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 10000))
+    print(f"Starting server on port {port}")
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=port,
+        log_level="info"
+    )
