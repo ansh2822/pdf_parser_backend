@@ -16,11 +16,6 @@ app = FastAPI(
 )
 
 if os.getenv("ENVIRONMENT") == "production":
-    allowed_origins = [
-        "https://devtools.devlabz.in",
-        "https://www.devtools.devlabz.in"
-    ]
-else:
     allowed_origins = ["*"]
 
 app.add_middleware(
