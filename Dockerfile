@@ -2,19 +2,23 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1
 ENV ENVIRONMENT=production
-ENV PORT=8000
 
+WORKDIR /app
+
+COPY requirements.txt .
+
+# Install CPU-only torch first — prevents docling from pulling CUDA version (~2.5 GB)
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining deps, then purge build tools to shrink image
 RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
     poppler-utils \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-COPY main.py app/ requirements.txt ./
-
-RUN pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get purge -y build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY . .
 
