@@ -11,6 +11,7 @@ def get_temp_dir():
     """Get appropriate temp directory for the platform"""
     if os.name == 'nt':
         return os.environ.get('TEMP', tempfile.gettempdir())
+    return tempfile.gettempdir()
 
 
 async def parse_pdf_to_md(pdf_bytes: bytes, websocket: WebSocket):

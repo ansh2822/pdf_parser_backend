@@ -3,3 +3,4 @@ uvicorn[standard]
 websockets
 docling
 PyPDF2
+boto3
